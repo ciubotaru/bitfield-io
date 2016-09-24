@@ -1,0 +1,105 @@
+CC=@CC@
+#CPPFLAGS=@CPPFLAGS@
+#export CPPFLAGS
+#LDFLAGS=@LDFLAGS@
+#export LDFLAGS
+export CC
+datarootdir=@datarootdir@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+mandir=@mandir@
+includedir=@includedir@
+AR=ar
+LIBS=-I. -lbitfield
+CFLAGS= -Wall -O3
+export CFLAGS
+VERSION=0.6.0
+TESTDIR=tests
+EXAMPLEDIR=examples
+LD_LIBRARY_PATH := $(shell pwd):$(LD_LIBRARY_PATH)
+export LD_LIBRARY_PATH
+HAVE_BITFIELD=@HAVE_BITFIELD@
+export HAVE_BITFIELD
+ifeq ($(HAVE_BITFIELD), 0)
+BITFIELD_LIB = -L../bitfield -I../bitfield
+else
+BITFIELD_LIB =
+endif
+PACKAGE_VERSION=@PACKAGE_VERSION@
+
+.PHONY: check man shared static install install-lib install-man install-header clean distclean uninstall uninstall-lib uninstall-man uninstall-header
+
+all: bitfield shared static
+
+bitfield:
+	@if [ $(HAVE_BITFIELD) -eq 0 ]; then \
+	if [ ! -d "bitfield" ] && [ ! -f "bitfield" ]; then echo "Local bitfield is required, but bitfield source tree is missing.\nPlease, provide 'bitfield' directory with source tree and type 'make' again."; exit 1; fi; \
+	echo 'Building local bitfield.'; \
+	$(MAKE) -C bitfield clean; \
+	cd bitfield; \
+	./configure --prefix=$(prefix); \
+	cd ..; \
+	$(MAKE) -C bitfield all; \
+	else echo 'Using systemwide bitfield.'; fi
+
+shared: libbitfield-io.so.$(VERSION)
+libbitfield-io.so.$(VERSION): bitfield-io.c
+	$(CC) $(CFLAGS) -c -fpic bitfield-io.c -o bf-io-shared.o -I. $(LIBS) $(BITFIELD_LIB)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,libbitfield-io.so.0 -o libbitfield-io.so.$(VERSION) bf-io-shared.o $(LIBS) $(BITFIELD_LIB)
+	for i in libbitfield-io.so.0 libbitfield-io.so; do ln -svf libbitfield-io.so.$(VERSION) $$i; done
+
+static: libbitfield-io.a
+libbitfield-io.a: bitfield-io.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c bitfield-io.c -o bf-io-static.o $(LIBS) $(BITFIELD_LIB)
+	@if [ $(HAVE_BITFIELD) -eq 0 ]; then \
+	$(AR) rcs libbitfield-io.a bf-io-static.o bitfield/bf-static.o; \
+	else \
+	$(AR) rcs libbitfield-io.a bf-io-static.o; \
+	fi
+
+test: check
+
+check:
+	$(MAKE) -C $(TESTDIR)
+
+example:
+	$(MAKE) -C $(EXAMPLEDIR)
+
+#install: install-lib install-man install-header
+install: install-lib install-header
+
+install-lib:
+	mkdir -p $(DESTDIR)$(libdir)
+	for i in libbitfield-io.so.0 libbitfield-io.so libbitfield-io.so.$(VERSION) libbitfield-io.a; do if [ -e $(DESTDIR)$(libdir)/$$i ]; then rm -v $(DESTDIR)$(libdir)/$$i; fi; done
+	install -m 0644 libbitfield-io.so.$(VERSION) $(DESTDIR)$(libdir)
+	ln -sv libbitfield-io.so.$(VERSION) $(DESTDIR)$(libdir)/libbitfield-io.so.0
+	ln -sv libbitfield-io.so.$(VERSION) $(DESTDIR)$(libdir)/libbitfield-io.so
+	install -m 0644 libbitfield-io.a $(DESTDIR)$(libdir)
+
+install-man:
+	$(MAKE) -C man install
+
+install-header:
+	mkdir -p $(DESTDIR)$(includedir)
+	install -m 644 bitfield-io.h $(DESTDIR)$(includedir)/bitfield-io.h
+
+clean:
+	rm -rvf *.a *.o *.so*
+	$(MAKE) -C tests clean
+
+distclean:
+	rm config.log config.status config.h Makefile
+	$(MAKE) -C man distclean
+	$(MAKE) -C $(TESTDIR) distclean
+
+uninstall: uninstall-lib uninstall-man uninstall-header
+
+uninstall-lib:
+	for i in libbitfield-io.so.0 libbitfield-io.so libbitfield-io.so.$(VERSION) libbitfield-io.a; do if [ -e $(DESTDIR)$(libdir)/$$i ]; then rm -v $(DESTDIR)$(libdir)/$$i; fi; done
+
+uninstall-man:
+	$(MAKE) -C man uninstall
+
+uninstall-header:
+	if [ -e $(DESTDIR)$(includedir)/bitfield-io.h ]; then rm -v $(DESTDIR)$(includedir)/bitfield-io.h; fi

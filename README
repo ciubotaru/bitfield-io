@@ -1,0 +1,54 @@
+bitfield
+========
+
+Version 0.0.1 (September 20, 2016)
+
+bitfield-io is a library of functions for input-output operations with bit
+fields (or bit arrays), i.e. series of zeroes and ones spread across an array
+of storage units (unsigned long integers).
+
+Installation
+------------
+
+To compile bitfield from source code:
+
+$ autoconf
+$ ./configure --prefix=DIRECTORY
+$ make
+
+This will build both a static and a shared version. To build just one of them,
+replace "make" with "make static" or "make shared".
+
+To test the compiled library:
+
+$ make check
+
+To build and run some example applications:
+
+$ make example
+
+The generic way to install the compiled files is:
+
+$ make install
+$ ldconfig
+
+However, one might prefer to use distro-specific installation mechanism (like
+"checkinstall") instead.
+
+File format spec
+----------------
+
+The format of this file is independent of CPU, architecture, OS etc.
+
+The file has two components:
+* size -- the size of the bit array is stored in the first 2 bytes of the file
+in little-endian order.
+* bit -- the array of bits are stored starting from the third byte, 8 bits per
+byte.
+
+Licensing
+---------
+
+bitfield is free software, and is released under the terms of the GNU General 
+Public License version 3 or any later version. Please see the file called 
+LICENSE.

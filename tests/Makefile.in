@@ -1,0 +1,29 @@
+TESTFILES=test1
+LIBS=-L.. -I..
+HAVE_BITFIELD = @HAVE_BITFIELD@
+ifeq ($(HAVE_BITFIELD), 0)
+BITFIELD_LIB = -L../bitfield -I../bitfield
+LD_LIBRARY_PATH := $(shell pwd)/../bitfield:$(LD_LIBRARY_PATH)
+else
+BITFIELD_LIB =
+endif
+
+
+all: build-tests run-tests
+
+build-tests: $(TESTFILES)
+$(TESTFILES): %: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,-rpath=$(CURDIR) -o $@ $< $(BITFIELD_LIB) $(LIBS) -lbitfield-io -lbitfield
+
+run-tests: $(TESTFILES)
+	for i in $(TESTFILES); do \
+	env LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./$$i; \
+	done
+
+clean:
+	rm -rvf $(TESTFILES)
+
+distclean:
+	rm Makefile
+
+.PHONY: all build-tests run-tests clean distclean
