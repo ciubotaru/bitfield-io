@@ -35,14 +35,17 @@ int main()
 	int written = bfwrite(input, "test.txt", NULL);
 	if (written == 0) {
 		printf("%s\n", failed);
+		remove("test.txt");
 		return 1;
 	}
 
 	struct bitfield *output = bfread("test.txt", NULL);
 	if (bfcmp(input, output, NULL) != 0) {
 		printf("%s\n", failed);
+		remove("test.txt");
 		return 1;
 	}
 	printf("%s\n", passed);
+	remove("test.txt");
 	return 0;
 }
