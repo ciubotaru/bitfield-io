@@ -1,0 +1,33 @@
+.TH bfwrite 3 "OCTOBER 15, 2016" "bitfield-io 0.6.0" "Input-output operations with bit arrays"
+.SH NAME
+bfwrite, bfread \- write and read arrays of bits to/from files.
+.SH SYNOPSIS
+.nf
+.B "#include <bitfield-io.h>
+.sp
+.BI "int bfwrite(const struct bitfield *"input ", const char *"filename ", char **"errmsg ");
+.BI "struct bitfield *bfread(const char *"filename ", char **"errmsg ");
+.fi
+.SH FILE FORMAT
+The file has two components:
+.sp
+.br
+\(bu size -- the size of the bit array is stored in the first 2 bytes of the file
+in little-endian order.
+.sp
+.br
+\(bu bit -- the array of bits are stored starting from the third byte, 8 bits per
+byte.
+.sp
+.br
+.SH DESCRIPTION
+The \fBbfwrite()\fR function takes a pointer to source bitfield \fIinput\fR, a pointer to destination file \fIfilename\fR and a pointer to character array \fIerrmsg\fR, copies the content of the bit array into the file according to file format specification, and returns the number of bytes written.
+.sp
+.br
+The \fBbfread()\fR function takes a pointer to source file \fIfilename\fR and a pointer to character array \fIerrmsg\fR, copies the content of the file into a bit array according to file format specification, and returns a pointer to the new bit array.
+.sp
+.br
+For details about bit arrays, see manual page for
+.BR bitfield (3).
+.SH AUTHOR
+Vitalie CIUBOTARU

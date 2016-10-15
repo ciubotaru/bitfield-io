@@ -66,8 +66,7 @@ check:
 example:
 	$(MAKE) -C $(EXAMPLEDIR)
 
-#install: install-lib install-man install-header
-install: install-lib install-header
+install: install-lib install-man install-header
 
 install-lib:
 	mkdir -p $(DESTDIR)$(libdir)

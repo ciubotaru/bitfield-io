@@ -42,4 +42,4 @@ AC_FUNC_MALLOC
 
 #AC_CONFIG_FILES([Makefile])
 #AC_OUTPUT([Makefile] [tests/Makefile] [man/Makefile] [examples/Makefile])
-AC_OUTPUT([Makefile] [tests/Makefile])
+AC_OUTPUT([Makefile] [tests/Makefile] [man/Makefile])
