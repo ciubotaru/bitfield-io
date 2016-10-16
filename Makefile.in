@@ -79,9 +79,9 @@ install-header:
 
 clean:
 	rm -rvf *.a *.o *.so*
-	$(MAKE) -C tests clean
+	$(MAKE) -C $(TESTDIR) clean
 
-distclean:
+distclean: clean
 	rm config.log config.status config.h Makefile
 	$(MAKE) -C man distclean
 	$(MAKE) -C $(TESTDIR) distclean
