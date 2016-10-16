@@ -1,11 +1,9 @@
 TESTFILES=test1
-LIBS=-L.. -I..
 HAVE_BITFIELD = @HAVE_BITFIELD@
 ifeq ($(HAVE_BITFIELD), 0)
-BITFIELD_LIB = -L../bitfield -I../bitfield
+BITFIELD_LIB = -L../bitfield
+BITFIELD_INC = -I../bitfield
 LD_LIBRARY_PATH := $(shell pwd)/../bitfield:$(LD_LIBRARY_PATH)
-else
-BITFIELD_LIB =
 endif
 
 
@@ -13,7 +11,7 @@ all: build-tests run-tests
 
 build-tests: $(TESTFILES)
 $(TESTFILES): %: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,-rpath=$(CURDIR) -o $@ $< $(BITFIELD_LIB) $(LIBS) -lbitfield-io -lbitfield
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,-rpath=$(CURDIR) -o $@ $< -L.. -I.. -lbitfield-io $(BITFIELD_LIB) $(BITFIELD_INC) -lbitfield
 
 run-tests: $(TESTFILES)
 	for i in $(TESTFILES); do \

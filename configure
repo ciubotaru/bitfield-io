@@ -2686,15 +2686,8 @@ $as_echo "no" >&6; }
 fi
 
 
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lm':
-#AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lrt':
-#AC_CHECK_LIB([rt], [main])
-if test "x$with_local_bitfield" = "xyes" ; then
-  HAVE_BITFIELD=0
+# Check for system-wide bitfield
 
-else
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing bfnew" >&5
 $as_echo_n "checking for library containing bfnew... " >&6; }
 if ${ac_cv_search_bfnew+:} false; then :
@@ -2753,6 +2746,18 @@ if test "$ac_res" != no; then :
 else
   HAVE_BITFIELD=0
 
+fi
+
+
+# Check if --with_local_bitfield was passed
+if test "x$with_local_bitfield" = "xyes"; then :
+  # if yes, ignore system-wide bitfield
+  HAVE_BITFIELD=0
+
+else
+  # otherwise check whether system-wide bitfield was found and building local bitfield was explicitly prohibited
+  if test "x$with_local_bitfield" = "xno" && test "$HAVE_BITFIELD" = 0; then :
+  as_fn_error $? "bitfield library not found" "$LINENO" 5
 fi
 
 fi
@@ -3284,7 +3289,7 @@ fi
 
 #AC_CONFIG_FILES([Makefile])
 #AC_OUTPUT([Makefile] [tests/Makefile] [man/Makefile] [examples/Makefile])
-ac_config_files="$ac_config_files Makefile tests/Makefile"
+ac_config_files="$ac_config_files Makefile tests/Makefile man/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3978,6 +3983,7 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "man/Makefile") CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

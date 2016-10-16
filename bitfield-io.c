@@ -33,6 +33,7 @@ int bfwrite(const struct bitfield *input, const char *filename, char **errmsg)
 	if (bfsize(input) > UINT_MAX) {
 		msg = "Bit array is too long";
 		retcode = 0;
+		fclose(outfile);
 		goto error;
 	}
 	int written = 0;
@@ -60,6 +61,7 @@ struct bitfield *bfread(const char *filename, char **errmsg)
 	infile = fopen(filename, "r");
 	if (infile == NULL) {
 		msg = "Could not open file";
+		fclose(infile);
 		goto error;
 	}
 	uint16_t size = 0;
@@ -67,6 +69,7 @@ struct bitfield *bfread(const char *filename, char **errmsg)
 	read = fread(&size, 1, 2, infile);
 	if (read != 2) {
 		msg = "Could not read file";
+		fclose(infile);
 		goto error;
 	}
 	struct bitfield *output = bfnew((int) le16toh(size));
@@ -74,8 +77,10 @@ struct bitfield *bfread(const char *filename, char **errmsg)
 	read = fread(output->field, 1, chars, infile);
 	if (read != chars) {
 		msg = "Could not read file";
+		fclose(infile);
 		goto error;
 	}
+	fclose(infile);
 	return output;
  error:
 	if (errmsg) {

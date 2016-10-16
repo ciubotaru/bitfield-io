@@ -1,9 +1,9 @@
 bitfield
 ========
 
-Version 0.6 (September 10, 2016)
+Version 0.6.0 (October 15, 2016)
 
-bitfield is a library of functions for creating, modifying and destroying bit
+bitfield-io is a library of functions for input-output operations with bit
 fields (or bit arrays), i.e. series of zeroes and ones spread across an array
 of storage units (unsigned long integers).
 
@@ -49,6 +49,6 @@ byte.
 Licensing
 ---------
 
-bitfield is free software, and is released under the terms of the GNU General 
+bitfield-io is free software, and is released under the terms of the GNU General 
 Public License version 3 or any later version. Please see the file called 
 LICENSE.
